@@ -2,7 +2,12 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { map, catchError } from 'rxjs/operators';
-import { IStockResponse } from '../../types/interfaces';
+import {
+  IStockTrading,
+  IStockResponse,
+  IStockPayload,
+  IStockTradingResponse,
+} from '../../types/interfaces';
 import { Observable } from 'rxjs';
 import { AxiosError } from 'axios';
 @Injectable()
@@ -33,6 +38,32 @@ export class VendorFuseFinanceService {
         }),
         catchError((error: AxiosError) => {
           throw new Error(`Failed to fetch data: ${error.message}`);
+        }),
+      );
+  }
+
+  buyStock(payload: IStockTrading): Observable<IStockTradingResponse> {
+    console.log('🚗', payload);
+    const stockPayload: IStockPayload = {
+      price: payload.price,
+      quantity: payload.quantity,
+    };
+    return this.httpService
+      .post<IStockTradingResponse>(
+        `${this.apiUrl}/stocks/${payload.symbol}/buy`,
+        stockPayload,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+          },
+        },
+      )
+      .pipe(
+        map((response) => {
+          return response.data;
+        }),
+        catchError((error: AxiosError) => {
+          throw new Error(`Failed to buy stock: ${error.message}`);
         }),
       );
   }
