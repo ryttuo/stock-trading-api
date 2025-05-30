@@ -1,15 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { VendorFuseFinanceService } from '../common/services/vendor-fuse-finance/vendor-fuse-finance.service';
+import { PrismaService } from '../common/orm/prisma/prisma.service';
 import {
   IStockResponse,
   IStockTrading,
   IStockTradingResponse,
+  ITransaction,
+  TRANSACTION_STATUS,
+  TRANSACTION_TYPE,
 } from '../common/types/interfaces';
+import { AxiosError } from 'axios';
 @Injectable()
 export class StocksService {
   constructor(
     private readonly vendorFuseFinanceService: VendorFuseFinanceService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async getStocks(nextToken?: string): Promise<IStockResponse> {
@@ -19,8 +25,57 @@ export class StocksService {
   }
 
   async buyStock(payload: IStockTrading): Promise<IStockTradingResponse> {
-    return await firstValueFrom(
-      this.vendorFuseFinanceService.buyStock(payload),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.vendorFuseFinanceService.buyStock(payload),
+      );
+
+      const transaction: ITransaction = {
+        userId: '1',
+        status: response.status === 200 ? 'SUCCESS' : 'FAILED',
+        quantity: response.data.order.quantity,
+        price: response.data.order.price,
+        total: response.data.order.total,
+        symbol: response.data.order.symbol,
+        type: TRANSACTION_TYPE.BUY,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await this.createTransaction(transaction);
+      return response;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response?.status === 400) {
+        const failedTransaction: ITransaction = {
+          userId: '1', // TODO TMP HARDCODE
+          status: TRANSACTION_STATUS.FAILED,
+          quantity: payload.quantity,
+          price: payload.price,
+          total: payload.price * payload.quantity,
+          symbol: payload.symbol,
+          type: TRANSACTION_TYPE.BUY,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        await this.createTransaction(failedTransaction);
+      }
+
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'An error occurred',
+      );
+    }
+  }
+
+  private async createTransaction(response: ITransaction): Promise<any> {
+    return await this.prisma.transactions.create({
+      data: {
+        symbol: response.symbol,
+        quantity: response.quantity,
+        price: response.price,
+        total: response.total,
+        status: response.status,
+        type: response.type,
+        userId: response.userId,
+      },
+    });
   }
 }

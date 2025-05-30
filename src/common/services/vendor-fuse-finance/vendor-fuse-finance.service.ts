@@ -37,7 +37,7 @@ export class VendorFuseFinanceService {
           return response.data;
         }),
         catchError((error: AxiosError) => {
-          throw new Error(`Failed to fetch data: ${error.message}`);
+          return this.handleError(error);
         }),
       );
   }
@@ -63,8 +63,12 @@ export class VendorFuseFinanceService {
           return response.data;
         }),
         catchError((error: AxiosError) => {
-          throw new Error(`Failed to buy stock: ${error.message}`);
+          return this.handleError(error);
         }),
       );
+  }
+
+  private handleError(error: AxiosError): never {
+    throw error;
   }
 }

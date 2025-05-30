@@ -3,8 +3,9 @@ import { StocksService } from './stocks.service';
 import { StocksController } from './stocks.controller';
 import { VendorFuseFinanceService } from '../common/services/vendor-fuse-finance/vendor-fuse-finance.service';
 import { HttpModule } from '@nestjs/axios';
+import { PrismaModule } from '../common/orm/prisma/prisma.module';
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, PrismaModule],
   providers: [StocksService, VendorFuseFinanceService],
   controllers: [StocksController],
 })
