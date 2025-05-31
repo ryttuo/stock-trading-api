@@ -37,7 +37,10 @@ export class StocksService {
 
       const transaction: ITransaction = {
         userId: '1',
-        status: response.status === 200 ? 'SUCCESS' : 'FAILED',
+        status:
+          response.status === 200
+            ? TRANSACTION_STATUS.SUCCESS
+            : TRANSACTION_STATUS.FAILED,
         quantity: response.data.order.quantity,
         price: response.data.order.price,
         total: response.data.order.total,
@@ -76,10 +79,11 @@ export class StocksService {
     }
   }
 
-  private async createTransaction(transaction: ITransaction): Promise<any> {
+  private async createTransaction(transaction: ITransaction): Promise<void> {
+    return;
     const { symbol, quantity, price, total, status, type, userId } =
       transaction;
-    return await this.prisma.transactions.create({
+    await this.prisma.transactions.create({
       data: {
         symbol,
         quantity,
