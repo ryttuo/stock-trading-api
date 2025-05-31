@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { VendorFuseFinanceService } from '../common/services/vendor-fuse-finance/vendor-fuse-finance.service';
 import { PrismaService } from '../common/orm/prisma/prisma.service';
@@ -44,7 +49,11 @@ export class StocksService {
       await this.createTransaction(transaction);
       return response;
     } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response?.status === 400) {
+      if (
+        error instanceof AxiosError &&
+        error.response?.status === 400 &&
+        error.response?.data.message === 'Price validation failed'
+      ) {
         const failedTransaction: ITransaction = {
           userId: '1', // TODO TMP HARDCODE
           status: TRANSACTION_STATUS.FAILED,
@@ -57,24 +66,28 @@ export class StocksService {
           updatedAt: new Date(),
         };
         await this.createTransaction(failedTransaction);
+        throw new HttpException(
+          error.response?.data?.message || error.message,
+          error.response?.status,
+        );
       }
 
-      throw new BadRequestException(
-        error instanceof Error ? error.message : 'An error occurred',
-      );
+      throw error;
     }
   }
 
-  private async createTransaction(response: ITransaction): Promise<any> {
+  private async createTransaction(transaction: ITransaction): Promise<any> {
+    const { symbol, quantity, price, total, status, type, userId } =
+      transaction;
     return await this.prisma.transactions.create({
       data: {
-        symbol: response.symbol,
-        quantity: response.quantity,
-        price: response.price,
-        total: response.total,
-        status: response.status,
-        type: response.type,
-        userId: response.userId,
+        symbol,
+        quantity,
+        price,
+        total,
+        status,
+        type,
+        userId,
       },
     });
   }

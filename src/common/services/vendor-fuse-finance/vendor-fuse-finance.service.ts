@@ -8,7 +8,7 @@ import {
   IStockPayload,
   IStockTradingResponse,
 } from '../../types/interfaces';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { AxiosError } from 'axios';
 @Injectable()
 export class VendorFuseFinanceService {
@@ -37,13 +37,12 @@ export class VendorFuseFinanceService {
           return response.data;
         }),
         catchError((error: AxiosError) => {
-          return this.handleError(error);
+          return throwError(() => error);
         }),
       );
   }
 
   buyStock(payload: IStockTrading): Observable<IStockTradingResponse> {
-    console.log('🚗', payload);
     const stockPayload: IStockPayload = {
       price: payload.price,
       quantity: payload.quantity,
@@ -63,12 +62,8 @@ export class VendorFuseFinanceService {
           return response.data;
         }),
         catchError((error: AxiosError) => {
-          return this.handleError(error);
+          return throwError(() => error);
         }),
       );
-  }
-
-  private handleError(error: AxiosError): never {
-    throw error;
   }
 }
