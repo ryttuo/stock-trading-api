@@ -1,0 +1,23 @@
+h2 Daily Trade Report for #{report.user.email}
+
+h3 Summary
+ul
+  li Successful Trades: #{report.summary.success}
+  li Failed Trades: #{report.summary.failed}
+  li Total Trades: #{report.summary.total}
+
+h3 Transaction Details
+table(border=1 cellpadding=4)
+  tr
+    th Symbol
+    th Quantity
+    th Price
+    th Status
+    th Date
+  each item in report.items
+    tr
+      td= item.symbol
+      td= item.quantity
+      td $#{item.price.toFixed(2)}
+      td= item.status
+      td= item.createdAt.toLocaleString()

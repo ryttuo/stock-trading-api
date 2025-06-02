@@ -108,6 +108,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           message: 'Transaction failed',
         };
+      case PRISMA_ERROR_CODES.MIGRATION_FAILED:
+        return {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Migration failed',
+        };
       default:
         return {
           status: HttpStatus.INTERNAL_SERVER_ERROR,

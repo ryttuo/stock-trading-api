@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { VendorFuseFinanceService } from '../common/services/vendor-fuse-finance/vendor-fuse-finance.service';
 import { PrismaService } from '../common/orm/prisma/prisma.service';
+import { VendorFuseFinanceService } from '../common/services/vendor-fuse-finance/vendor-fuse-finance.service';
 import {
   IStockResponse,
   IStockTrading,
@@ -15,12 +11,13 @@ import {
   TRANSACTION_STATUS,
   TRANSACTION_TYPE,
 } from '../common/types/interfaces';
-import { AxiosError } from 'axios';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class StocksService {
   constructor(
     private readonly vendorFuseFinanceService: VendorFuseFinanceService,
     private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
   ) {}
 
   async getStocks(nextToken?: string): Promise<IStockResponse> {
@@ -30,13 +27,15 @@ export class StocksService {
   }
 
   async buyStock(payload: IStockTrading): Promise<IStockTradingResponse> {
+    const user = await this.usersService.getTestUser();
+
     try {
       const response = await firstValueFrom(
         this.vendorFuseFinanceService.buyStock(payload),
       );
 
       const transaction: ITransaction = {
-        userId: '1',
+        userId: user.id,
         status:
           response.status === 200
             ? TRANSACTION_STATUS.SUCCESS
@@ -50,15 +49,16 @@ export class StocksService {
         updatedAt: new Date(),
       };
       await this.createTransaction(transaction);
+      response.status = HttpStatus.CREATED;
       return response;
     } catch (error: unknown) {
       if (
         error instanceof AxiosError &&
-        error.response?.status === 400 &&
+        error.response?.status === HttpStatus.BAD_REQUEST &&
         error.response?.data.message === 'Price validation failed'
       ) {
         const failedTransaction: ITransaction = {
-          userId: '1', // TODO TMP HARDCODE
+          userId: user.id,
           status: TRANSACTION_STATUS.FAILED,
           quantity: payload.quantity,
           price: payload.price,
@@ -80,7 +80,6 @@ export class StocksService {
   }
 
   private async createTransaction(transaction: ITransaction): Promise<void> {
-    return;
     const { symbol, quantity, price, total, status, type, userId } =
       transaction;
     await this.prisma.transactions.create({

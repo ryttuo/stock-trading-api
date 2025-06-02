@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -23,7 +22,7 @@ model Users {
 }
 
 model Transactions {
-  id        String   @id @default(uuid())
+  id        String            @id @default(uuid())
   userId    String
   status    TransactionStatus
   quantity  Int
@@ -31,8 +30,8 @@ model Transactions {
   total     Float
   symbol    String
   type      TransactionType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 }
 
 enum TransactionStatus {

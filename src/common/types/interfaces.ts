@@ -28,6 +28,7 @@ export const PRISMA_ERROR_CODES = {
   TABLE_NOT_FOUND: 'P2021',
   COLUMN_NOT_FOUND: 'P2022',
   TRANSACTION_FAILED: 'P2034',
+  MIGRATION_FAILED: 'P2010',
 } as const;
 
 export interface IStock {
@@ -93,4 +94,12 @@ export interface IError {
 export interface IPrismaError {
   status: number;
   message: string;
+}
+
+export interface IUser {
+  id: string;
+  email: string;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
