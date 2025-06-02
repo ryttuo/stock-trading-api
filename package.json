@@ -5,7 +5,17 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "20.19.0"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
+    "prestart": "sh scripts/check-node.sh",
+    "prestart:dev": "sh scripts/check-node.sh",
+    "prestart:debug": "sh scripts/check-node.sh",
+    "prestart:prod": "sh scripts/check-node.sh",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -18,7 +28,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "ts-node prisma/seed.mjs"
+    "seed": "ts-node prisma/seed.ts",
+    "docker:dev": "docker compose up",
+    "docker:dev:build": "docker compose up --build",
+    "docker:prod": "docker compose -f docker compose.yml --env-file .env.prod up -d",
+    "docker:prod:build": "docker compose -f docker compose.yml --env-file .env.prod up -d --build",
+    "docker:down": "docker compose down",
+    "docker:down:volumes": "docker compose down -v"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
