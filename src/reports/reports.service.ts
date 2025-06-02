@@ -2,11 +2,15 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/common/orm/prisma/prisma.service';
 import { IUser } from 'src/common/types/interfaces';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+
 @Injectable()
 export class ReportsService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly prisma: PrismaService,
+    @InjectQueue('reports') private readonly reportsQueue: Queue,
   ) {}
 
   async sendReport(user: IUser) {
@@ -20,7 +24,11 @@ export class ReportsService {
         report,
       },
     });
-    Logger.log(`Report sent to ${user.email}`);
+    Logger.debug(`Report sent to ${user.email}`);
+  }
+
+  async queueReport(user: IUser) {
+    await this.reportsQueue.add('send-report', { user });
   }
 
   async buildUserReport(user: IUser) {
