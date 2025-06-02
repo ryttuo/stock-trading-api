@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "460a6a23-b715-4cea-9732-5ed6754b7f57",
+		"name": "fusefinace",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2007125",
+		"_collection_link": "https://d3vteam.postman.co/workspace/My-Workspace~14d87654-0f6a-400e-80d3-791220dedb4a/collection/2007125-460a6a23-b715-4cea-9732-5ed6754b7f57?action=share&source=collection_link&creator=2007125"
+	},
+	"item": [
+		{
+			"name": "1) stock-trading/api/v1/stocks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/stocks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"stocks"
+					],
+					"query": [
+						{
+							"key": "nextToken",
+							"value": "eyJzeW1ib2wiOiJIRCJ9",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2) stock-trading/api/v1/stocks/buy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\": 0.245,\n    \"quantity\": 10,\n    \"symbol\": \"PG\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/stocks/buy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"stocks",
+						"buy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3) stock-trading/api/v1/users/portfolios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/users/portfolios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"portfolios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fusefinance.com/stocks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "nSbPbFJfe95BFZufiDwF32UhqZLEVQ5K4wdtJI2e",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.challenge.fusefinance.com/stocks",
+					"protocol": "https",
+					"host": [
+						"api",
+						"challenge",
+						"fusefinance",
+						"com"
+					],
+					"path": [
+						"stocks"
+					],
+					"query": [
+						{
+							"key": "nextToken",
+							"value": "eyJzeW1ib2wiOiJDU0NPIn0=",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fusefinance.com//stocks/:symbol/buy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "nSbPbFJfe95BFZufiDwF32UhqZLEVQ5K4wdtJI2e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\": 19.71107,\n    \"quantity\": 5\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.challenge.fusefinance.com/stocks/NFLX/buy",
+					"protocol": "https",
+					"host": [
+						"api",
+						"challenge",
+						"fusefinance",
+						"com"
+					],
+					"path": [
+						"stocks",
+						"NFLX",
+						"buy"
+					],
+					"query": [
+						{
+							"key": "nextToken",
+							"value": "eyJzeW1ib2wiOiJDU0NPIn0=",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "stock-trading/api/v1/users/transactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/users/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

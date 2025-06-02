@@ -4,7 +4,7 @@
       {
         "type": "node",
         "request": "launch",
-        "name": "💰 (stock-trading-api)",
+        "name": "💰 app",
         "runtimeExecutable": "node",
         "runtimeArgs": ["--inspect-brk", "${workspaceFolder}/node_modules/.bin/nest", "start", "--debug", "--watch"],
         "sourceMaps": true,
