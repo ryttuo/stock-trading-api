@@ -31,8 +31,8 @@
     "seed": "ts-node prisma/seed.ts",
     "docker:dev": "docker compose up",
     "docker:dev:build": "docker compose up --build",
-    "docker:prod": "docker compose -f docker compose.yml --env-file .env.prod up -d",
-    "docker:prod:build": "docker compose -f docker compose.yml --env-file .env.prod up -d --build",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:build": "docker compose -f docker-compose.prod.yml up -d --build",
     "docker:down": "docker compose down",
     "docker:down:volumes": "docker compose down -v"
   },

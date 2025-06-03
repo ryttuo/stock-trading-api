@@ -30,6 +30,39 @@ A Postman collection is available in the root directory:
 - Includes example request bodies and environment variables
 - Import into Postman to quickly start testing the API
 
+### Live API
+
+The API is available at `https://stock-trading.ryttuo.com` with the following endpoints:
+
+1. List Available Stocks
+   ```
+   GET https://stock-trading.ryttuo.com/api/v1/stocks
+   ```
+
+2. Execute Stock Purchase
+   ```
+   POST https://stock-trading.ryttuo.com/api/v1/stocks/buy
+   ```
+   ```json
+   {
+     "price": 0.2475,
+     "quantity": 200,
+     "symbol": "PFE"
+   }
+
+3. Get User Portfolios
+   ```
+   GET https://stock-trading.ryttuo.com/api/v1/users/portfolios
+   ```
+
+4. View Email Reports
+   ```
+   https://maildev.ryttuo.com
+   ```
+   Access the MailDev interface to view all email reports sent by the application, including daily portfolio reports and transaction notifications.
+
+These endpoints are also included in the Postman collection for easy testing.
+
 ## API Endpoints
 
 The application provides the following main endpoints:

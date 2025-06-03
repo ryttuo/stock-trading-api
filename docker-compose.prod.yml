@@ -1,0 +1,76 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.prod
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for postgres...' &&
+        if ! npx prisma db pull > /dev/null 2>&1; then
+          echo 'Database is empty, running migrations and seed...' &&
+          npx prisma migrate deploy &&
+          npx prisma db seed
+        else
+          echo 'Database exists, skipping migrations and seed...'
+        fi &&
+        npm run start:dev
+      "
+    networks:
+      - stock-trading-network-prod
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=stock_trading
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stock-trading-network-prod
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stock-trading-network-prod
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080" # Web interface
+    networks:
+      - stock-trading-network-prod
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  stock-trading-network-prod:
+    driver: bridge 
